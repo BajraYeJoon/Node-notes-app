@@ -1,4 +1,6 @@
+const { match } = require("assert");
 const fs = require("fs");
+const chalk = require("chalk");
 
 const getNotes = function () {
   return "Your Notes....";
@@ -17,15 +19,32 @@ const addNote = function (title, body) {
     });
 
     saveNotes(notes);
+    console.log(chalk.green.inverse("added"));
   } else {
-      console.log("taken")
+    console.log("taken");
+    console.log(chalk.red.inverse("taken"));
   }
 };
 
-const saveNotes = function (notes) {
+const removeNotes = function (title) {
+  const notes = loadNotes();
+
+  const matchNotes = notes.filter(function (note) {
+    return note.title !== title;
+  });
+
+  if (notes.length > matchNotes) {
+    saveNotes(matchNotes);
+    console.log(chalk.green.inverse("Rremoved"));
+  } else {
+    console.log(chalk.red.inverse("not removed"));
+  }
+};
+
+function saveNotes(notes) {
   const dataJSON = JSON.stringify(notes);
   fs.writeFileSync("notes.json", dataJSON);
-};
+}
 
 const loadNotes = function () {
   try {
@@ -40,4 +59,5 @@ const loadNotes = function () {
 module.exports = {
   getNotes: getNotes,
   addNote: addNote,
+  removeNotes: removeNotes,
 };
