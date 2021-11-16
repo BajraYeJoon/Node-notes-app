@@ -2,51 +2,75 @@ const { match } = require("assert");
 const fs = require("fs");
 const chalk = require("chalk");
 
-const getNotes = function () {
-  return "Your Notes....";
-};
-
-const addNote = function (title, body) {
+//Declaration of the required functions in arrow functions
+const addNote = (title, body) => {
   const notes = loadNotes();
-  const dupNotes = notes.filter(function (note) {
-    return note.title === title;
-  });
+  const dupNote = notes.find((note) => note.title === title);
 
-  if (dupNotes.length === 0) {
+  //Check if there is duplicate notes
+  if (!dupNote) {
     notes.push({
       title: title,
       body: body,
     });
 
     saveNotes(notes);
-    console.log(chalk.green.inverse("added"));
+    console.log(chalk.green.inverse("New Note Added! 📝"));
   } else {
     console.log("taken");
-    console.log(chalk.red.inverse("taken"));
+    console.log(
+      chalk.red.inverse("This name already exists. Pleas try another name.")
+    );
   }
 };
 
-const removeNotes = function (title) {
+const removeNotes = (title) => {
   const notes = loadNotes();
 
-  const matchNotes = notes.filter(function (note) {
-    return note.title !== title;
-  });
+  const matchNotes = notes.filter((note) => note.title !== title);
 
+  //Check if notes are added and is greater than the original number of notes
   if (notes.length > matchNotes) {
     saveNotes(matchNotes);
-    console.log(chalk.green.inverse("Rremoved"));
+    console.log(
+      chalk.green.inverse("The note has been removed from the list ✔")
+    );
   } else {
-    console.log(chalk.red.inverse("not removed"));
+    console.log(chalk.red.inverse("There exists No Note by the given Name"));
   }
 };
 
-function saveNotes(notes) {
+const listNotes = () => {
+  const notes = loadNotes();
+
+  //Loop through each note and display it
+  notes.forEach((note) => {
+    console.log(note.title);
+  });
+};
+
+const readNotes = (title) => {
+  const notes = loadNotes();
+
+  const note = notes.find((note) => note.title === title);
+
+  //Find the notes
+  if (note) {
+    console.log(chalk.inverse.bold(note.title));
+    console.log(note.body);
+  } else {
+    console.log(chalk.red.inverse("There exists no any Note by the name 😥"));
+  }
+};
+
+//To save the notes in JSON
+const saveNotes = (notes) => {
   const dataJSON = JSON.stringify(notes);
   fs.writeFileSync("notes.json", dataJSON);
-}
+};
 
-const loadNotes = function () {
+//To load the notes from the JSON
+const loadNotes = () => {
   try {
     const data = fs.readFileSync("notes.json");
     const dataJSON = data.toString();
@@ -57,7 +81,8 @@ const loadNotes = function () {
 };
 
 module.exports = {
-  getNotes: getNotes,
   addNote: addNote,
   removeNotes: removeNotes,
+  listNotes: listNotes,
+  readNotes: readNotes,
 };

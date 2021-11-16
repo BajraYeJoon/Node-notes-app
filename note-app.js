@@ -1,10 +1,13 @@
+//Dependencies
+
 const chalk = require("chalk");
 const { describe, demandOption, string } = require("yargs");
 
 const yargs = require("yargs");
-const { removeNotes } = require("./utils.js");
+const { removeNotes, listNotes } = require("./utils.js");
 const notes = require("./utils.js");
 
+//Add command to add note to list
 yargs.command({
   command: "add",
   describe: "Add new note",
@@ -20,15 +23,31 @@ yargs.command({
       type: "string",
     },
   },
-  handler: function (argv) {
+  handler(argv) {
     notes.addNote(argv.title, argv.body);
   },
 });
 
-//remove
+//Remove Command to remove from the list
 yargs.command({
   command: "remove",
-  describe: "re,move note",
+  describe: "Remove Note",
+  builder: {
+    title: {
+      describe: "Note title",
+      demandOption: true,
+      type: "string",
+    },
+  },
+  handler(argv) {
+    notes.removeNotes(argv.title);
+  },
+});
+
+//Read Command to read the notes
+yargs.command({
+  command: "read",
+  describe: "read note",
   builder: {
     title: {
       describe: "note title",
@@ -36,24 +55,18 @@ yargs.command({
       type: "string",
     },
   },
-  handler: function (argv) {
-    notes.removeNotes(argv.title);
+  handler(argv) {
+    notes.readNotes(argv.title);
   },
 });
 
-yargs.command({
-  command: "read",
-  describe: "read note",
-  handler: function () {
-    console.log("reading new note");
-  },
-});
-
+//List command to list all the crated note
 yargs.command({
   command: "list",
   describe: "list note",
-  handler: function () {
-    console.log("listing new note");
+  handler() {
+    console.log(chalk.yellow.inverse("Your Notes"));
+    notes.listNotes();
   },
 });
 
